@@ -109,8 +109,90 @@ CREATE TABLE order_reviews (
     sentiment       VARCHAR(20)
 );
 
+
+
+
+USE ecommerce_db;
+
+-- Drop if exists
+DROP TABLE IF EXISTS fcr_master_risk_table;
+DROP TABLE IF EXISTS fcr_velocity_features;
+DROP TABLE IF EXISTS fcr_structuring_features;
+DROP TABLE IF EXISTS fcr_behavioral_features;
+
+-- Velocity features
+CREATE TABLE fcr_velocity_features (
+    customer_id              VARCHAR(255) PRIMARY KEY,
+    total_orders             INT,
+    avg_days_between_orders  FLOAT,
+    total_spend              FLOAT,
+    high_velocity_flag       INT,
+    high_value_flag          INT,
+    velocity_risk_score      FLOAT
+);
+
+-- Structuring features
+CREATE TABLE fcr_structuring_features (
+    customer_id              VARCHAR(255) PRIMARY KEY,
+    total_transactions       INT,
+    total_spend              FLOAT,
+    avg_transaction_value    FLOAT,
+    round_number_txns        INT,
+    below_threshold_txns     INT,
+    unusual_installment_txns INT,
+    structuring_risk_score   FLOAT,
+    structuring_flag         INT
+);
+
+-- Behavioral features
+CREATE TABLE fcr_behavioral_features (
+    customer_id              VARCHAR(255) PRIMARY KEY,
+    total_orders             INT,
+    late_night_orders        INT,
+    weekend_high_value       INT,
+    suspicious_reviews       INT,
+    avg_payment_value        FLOAT,
+    dominant_state           VARCHAR(10),
+    behavioral_risk_score    FLOAT,
+    behavioral_flag          INT
+);
+
+-- Master risk table
+CREATE TABLE fcr_master_risk_table (
+    customer_id              VARCHAR(255) PRIMARY KEY,
+    total_orders             INT,
+    total_spend              FLOAT,
+    high_velocity_flag       INT,
+    high_value_flag          INT,
+    velocity_risk_score      FLOAT,
+    structuring_flag         INT,
+    structuring_risk_score   FLOAT,
+    round_number_txns        INT,
+    below_threshold_txns     INT,
+    behavioral_flag          INT,
+    behavioral_risk_score    FLOAT,
+    late_night_orders        INT,
+    suspicious_reviews       INT,
+    dominant_state           VARCHAR(10),
+    composite_risk_score     FLOAT,
+    risk_tier                VARCHAR(20),
+    total_flags_fired        INT,
+    aml_alert                INT
+);
+
 -- ── Verify all tables created ────────────────────────────────
 SELECT TABLE_NAME
 FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_CATALOG = 'ecommerce_db'
 ORDER BY TABLE_NAME;
+
+--ALL TABLES AND NO. OF ROWS LOADED----------------------------------
+SELECT 
+    t.name AS table_name,
+    SUM(p.rows) AS row_count
+FROM sys.tables t
+JOIN sys.partitions p 
+    ON t.object_id = p.object_id
+WHERE p.index_id IN (0,1)  -- heap or clustered index
+GROUP BY t.name
+ORDER BY t.name;

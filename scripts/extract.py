@@ -37,13 +37,13 @@ def extract_all():
 
         # Check file exists before reading
         if not os.path.exists(filepath):
-            print(f"  ❌ MISSING: {filename} — check your data/raw/ folder")
+            print(f"   MISSING: {filename} — check your data/raw/ folder")
             continue
 
         df = pd.read_csv(filepath)
         dataframes[name] = df
 
-        print(f"  ✅ {name:<12} → {df.shape[0]:>7,} rows  ×  {df.shape[1]:>2} columns")
+        print(f"   {name:<12} → {df.shape[0]:>7,} rows  ×  {df.shape[1]:>2} columns")
 
     print(f"\n   Total tables loaded: {len(dataframes)}/7")
     return dataframes
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     data = extract_all()
 
     # Quick sanity check — print column names of each table
-    print("\n📋 COLUMN NAMES PER TABLE:")
+    print("\n COLUMN NAMES PER TABLE:")
     print("=" * 50)
     for name, df in data.items():
         print(f"\n{name.upper()}:")

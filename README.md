@@ -33,8 +33,8 @@ If any step breaks, you fix just that step. The rest stays intact.
    Purpose            Store live transactions                              Analyze historical data
    Example            Your bank recording a payment                      Analyst checking monthly revenue
    Optimized for      Writing fast                                        Reading/querying fast
-My project uses PostgreSQL as a simple warehouse
-We're building a lightweight analytical database — not a transaction system.
+My project uses MS SQL as a simple warehouse
+I have built a lightweight analytical database — not a transaction system.
 
 □ What is a Schema / Data Model?
    A schema is the blueprint of your database — what tables exist and how they connect.
@@ -86,8 +86,15 @@ STEP4
 ✅ Revenue column added to items
 ✅ Sentiment labels added to reviews
 
-STEP5 Load into SQL Server
+STEP 5 Load into SQL Server
 "The L in ETL — making data permanent"
+□ create_tables.sql ran in SSMS — 7 tables visible
+□ .env file has correct DB_SERVER, DB_NAME, DB_DRIVER
+□ load.py connection test shows ✅ Connected
+□ All 7 tables loaded without ❌ errors
+□ verify_counts matches Python output
+□ SSMS count query confirms all row counts
 
 
-
+STEP 6 — SQL Analytics in SSMS
+"Turning raw data into business insights"

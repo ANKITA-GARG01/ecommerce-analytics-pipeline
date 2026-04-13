@@ -82,17 +82,51 @@ def load_table(df, table_name, engine):
         run out of memory. Chunks are safer and more stable.
     """
     try:
+        print(f"  ⏳ Loading {table_name} ({len(df):,} rows)...", end='', flush=True)
+       
         with engine.begin() as conn:  # ← transaction scope for this load
          df.to_sql(
             name       = table_name,
             con        = conn,
+            index      = False, #index=False → don't write the pandas row numbers as a column
             if_exists  = 'append',
-            index      = False,
-            chunksize  = 1000
+            chunksize = 1000     # ← increase from 1000 to 5000
+
         )
         print(f"  ✅ {table_name:<20} → {len(df):>7,} rows loaded out of {df.shape[0]:,}")
     except Exception as e:
         print(f"  ❌ {table_name:<20} → FAILED: {e}")
+
+# In load.py, add this function:
+def truncate_all_tables(engine):
+    """
+    Clears all tables before loading fresh data.
+    ORDER MATTERS — truncate facts before dimensions
+    (reverse of load order) because of FK constraints.
+    """
+    print("\n🧹 Clearing existing data...")
+
+    tables_in_order = [
+        # Facts first (they reference dimensions)
+        'fact_order_items',
+        'fact_orders',
+        'order_payments',
+        'order_reviews',
+        # Dimensions last
+        'dim_customers',
+        'dim_products',
+        'dim_sellers',
+    ]
+
+    with engine.begin() as conn:
+        for table in tables_in_order:
+            try:
+                conn.execute(text(f"DELETE FROM {table}"))
+                print(f"  🗑️  Cleared {table}")
+            except Exception as e:
+                print(f"  ⚠️  Could not clear {table}: {e}")
+
+    print("  ✅ All tables cleared\n")
 
 
 def load_all(clean_data):
@@ -112,19 +146,19 @@ def load_all(clean_data):
     You can't reference a book that hasn't been published yet.
     Publish the book (dimension) first, then reference it (fact).
     """
-    print("\n" + "="*50)
-    print("📤 LOAD — Pushing data into SQL Server...")
-    print("="*50)
 
     engine = get_engine()
 
-    # Test connection before doing anything
     print("\n🔌 Testing connection...")
     if not test_connection(engine):
-        print("  ⛔ Aborting load — fix connection first")
         return
-    
 
+    # ← ADD THIS LINE
+    truncate_all_tables(engine)
+    # ... rest of your existing code
+    print("\n" + "="*50)
+    print("📤 LOAD — Pushing data into SQL Server...")
+    print("="*50)
 
     print("\n📦 Loading DIMENSION tables first...")
     # Dimensions first — these are referenced by fact tables
@@ -178,8 +212,11 @@ if __name__ == "__main__":
     sys.path.append('.')
     from extract import extract_all
     from transform import run_all_transforms
+    from fcr_transform import run_fcr_transform
 
+    run_fcr_transform()
     raw   = extract_all()
     clean_data = run_all_transforms(raw)
+    
     load_all(clean_data)
     

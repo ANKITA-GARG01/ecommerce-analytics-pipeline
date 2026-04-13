@@ -94,13 +94,12 @@ def transform_items(df):
   # 2. Handle nulls
   null_count=df.isnull().sum()
   log(f"Null values per column:\n{null_count}")
-
-
   #find out that there are no nulls in items table, so we can skip dropping or filling nulls
+
   # 3. Calculate total revenue per item (price + freight_value)
   df['revenue']=df["price"]+df["freight_value"]
   log("Calculated revenue = price + freight_value")
-  print(f"  ✅ ITEMS done → {df.shape[0]:,} rows, {df.shape[1]} columns")
+  print(f"   ITEMS done → {df.shape[0]:,} rows, {df.shape[1]} columns")
   return df
 # ============================================================
 # TRANSFORM: CUSTOMERS
@@ -123,7 +122,7 @@ def transform_customers(df):
     log(f"Removed {before - after} duplicate customers")
 
 
-    print(f"  ✅ CUSTOMERS done → {df.shape[0]:,} rows, {df.shape[1]} columns")
+    print(f"  CUSTOMERS done → {df.shape[0]:,} rows, {df.shape[1]} columns")
     return df
 
 
