@@ -159,9 +159,9 @@ ecommerce-analytics-pipeline/
 │   └── fcr_transform.py        ← FCR/AML risk scoring engine
 │
 ├── sql/
-│   ├── create_tables.sql       ← Star Schema DDL (7 tables + FK constraints)
-│   ├── create_fcr_tables.sql   ← FCR tables DDL (4 risk tables)
-│   └── analysis.sql            ← 16 business + FCR queries
+│   ├── creating tables.sql       ← Star Schema DDL (7 tables + FK constraints)
+│   ├── QUERIES ON ECOMMERCE DATA.sql   ← FCR tables DDL (4 risk tables)
+│   └── Risk analysis.sql            ← 16 business + FCR queries
 │
 ├── dashboard/
 │   └── screenshots/            ← Power BI dashboard exports
